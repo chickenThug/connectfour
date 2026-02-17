@@ -19,7 +19,7 @@ type Direction struct {
 	Horizontal int
 }
 
-func update_board(column, player int) Move {
+func updateBoard(column, player int) Move {
 	row := 0
 	// Find first empty square in column
 	for Board[column][row] != 0 {
@@ -29,14 +29,14 @@ func update_board(column, player int) Move {
 	return Move{player, column, row}
 }
 
-func print_board() {
+func printBoard() {
 	for r := range rows {
-		current_row := rows - 1 - r
+		currentRow := rows - 1 - r
 		for c := range columns {
-			current_column := c
+			currentColumn := c
 
 			var char string
-			switch Board[current_column][current_row] {
+			switch Board[currentColumn][currentRow] {
 			case 0:
 				char = " "
 			case 1:
@@ -52,55 +52,55 @@ func print_board() {
 	fmt.Println("--------------------")
 }
 
-func is_won(last_move Move) bool {
+func isWon(lastMove Move) bool {
 	horizontal := Direction{0, 1}
 	vertical := Direction{1, 0}
 	diagonal := Direction{1, 1}
 
-	check1 := is_won_direction(last_move, horizontal)
-	check2 := is_won_direction(last_move, vertical)
-	check3 := is_won_direction(last_move, diagonal)
+	check1 := isWonDirection(lastMove, horizontal)
+	check2 := isWonDirection(lastMove, vertical)
+	check3 := isWonDirection(lastMove, diagonal)
 
 	return check1 || check2 || check3
 }
 
-func is_won_direction(last_move Move, direction Direction) bool {
+func isWonDirection(lastMove Move, direction Direction) bool {
 	length := 1
 
-	current_column := last_move.Column + direction.Horizontal
-	current_row := last_move.Row + direction.Vertical
+	currentColumn := lastMove.Column + direction.Horizontal
+	currentRow := lastMove.Row + direction.Vertical
 
-	for is_inbounds(current_column, current_row) && (Board[current_column][current_row] == last_move.Player) {
+	for isInbounds(currentColumn, currentRow) && (Board[currentColumn][currentRow] == lastMove.Player) {
 		length++
-		current_column = current_column + direction.Horizontal
-		current_row = current_row + direction.Vertical
+		currentColumn = currentColumn + direction.Horizontal
+		currentRow = currentRow + direction.Vertical
 	}
 
-	current_column = last_move.Column - direction.Horizontal
-	current_row = last_move.Row - direction.Vertical
+	currentColumn = lastMove.Column - direction.Horizontal
+	currentRow = lastMove.Row - direction.Vertical
 
-	for is_inbounds(current_column, current_row) && (Board[current_column][current_row] == last_move.Player) {
+	for isInbounds(currentColumn, currentRow) && (Board[currentColumn][currentRow] == lastMove.Player) {
 		length++
-		current_column = current_column - direction.Horizontal
-		current_row = current_row - direction.Vertical
+		currentColumn = currentColumn - direction.Horizontal
+		currentRow = currentRow - direction.Vertical
 	}
 	return length > 3
 }
 
-func is_inbounds(column, row int) bool {
+func isInbounds(column, row int) bool {
 	return (column < columns) && (column >= 0) && (row < rows) && (row >= 0)
 }
 
 func main() {
 	player := 1
-	var is_over bool
+	var isOver bool
 	var turns int
 
 	var column int
 
-	print_board()
+	printBoard()
 
-	for !is_over {
+	for !isOver {
 		fmt.Printf("Player %d turn plese choose a column (0-6)\n", player)
 
 		_, err := fmt.Scan(&column)
@@ -112,16 +112,16 @@ func main() {
 			continue
 		}
 
-		last_move := update_board(column, player)
+		last_move := updateBoard(column, player)
 		turns++
-		print_board()
+		printBoard()
 
-		if is_won(last_move) {
+		if isWon(last_move) {
 			fmt.Printf("Congrats Player %d you won\n", player)
-			is_over = true
+			isOver = true
 		} else if turns == (rows * columns) {
 			fmt.Println("Game is drawn ")
-			is_over = true
+			isOver = true
 		}
 		if player == 1 {
 			player = 2
