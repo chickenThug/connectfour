@@ -11,8 +11,8 @@ type Move struct {
 }
 
 type Direction struct {
-	Vertical   int
 	Horizontal int
+	Vertical   int
 }
 
 type Game struct {
@@ -113,7 +113,7 @@ func (g *Game) run() {
 	for !g.IsOver {
 		fmt.Printf("Player %d turn plese choose a column (0-6)\n", g.Player)
 		if g.Player == 1 {
-			column = GetBotMove(&g.Board, last_move, 4, g.Player)
+			column = GetBotMove(&g.Board, 4, g.Player)
 		} else {
 			_, err := fmt.Scan(&column)
 
@@ -128,7 +128,7 @@ func (g *Game) run() {
 			}
 		}
 
-		last_move := g.updateBoard(column)
+		last_move = g.updateBoard(column)
 		g.Turns++
 		g.printBoard()
 

@@ -1,28 +1,5 @@
 package main
 
-func maxLenghtDirection(board *[columns][rows]int, lastMove Move, dir Direction) int {
-	length := 1
-
-	currentColumn := lastMove.Column + dir.Horizontal
-	currentRow := lastMove.Row + dir.Vertical
-
-	for isInbounds(currentColumn, currentRow) && (board[currentColumn][currentRow] == lastMove.Player) {
-		length++
-		currentColumn = currentColumn + dir.Horizontal
-		currentRow = currentRow + dir.Vertical
-	}
-
-	currentColumn = lastMove.Column - dir.Horizontal
-	currentRow = lastMove.Row - dir.Vertical
-
-	for isInbounds(currentColumn, currentRow) && (board[currentColumn][currentRow] == lastMove.Player) {
-		length++
-		currentColumn = currentColumn - dir.Horizontal
-		currentRow = currentRow - dir.Vertical
-	}
-	return length
-}
-
 func isWon(board *[columns][rows]int, lastMove Move) bool {
 	horizontal := Direction{1, 0}
 	vertical := Direction{0, 1}
@@ -90,9 +67,11 @@ func value(board *[columns][rows]int) int {
 
 func windowValue(board *[columns][rows]int, column, row int, dir Direction) int {
 	player1, player2 := 0, 0
-	for range winLength {
-		column += dir.Horizontal
-		row += dir.Vertical
+	for i := range winLength {
+		if i != 0 {
+			column += dir.Horizontal
+			row += dir.Vertical
+		}
 		marker := board[column][row]
 		if marker == -1 {
 			player2 += 1
@@ -105,7 +84,7 @@ func windowValue(board *[columns][rows]int, column, row int, dir Direction) int 
 	} else if player1 > 0 {
 		return player1
 	} else if player2 > 0 {
-		return player2
+		return -player2
 	} else {
 		return 0
 	}
@@ -142,7 +121,11 @@ func getMoves(board *[columns][rows]int, player int) []Move {
 func minimax(board *[columns][rows]int, lastMove Move, depth int, player int) int {
 	isOver := isTerminal(board, lastMove)
 	if isOver > 0 {
-		return isOver // Todo: this probably needs to be changed if drawn return 0 else return big
+		if isOver == 2 {
+			return 999999999999999 * player
+		} else {
+			return 0
+		}
 	}
 	if depth == 0 {
 		return value(board)
@@ -167,12 +150,12 @@ func minimax(board *[columns][rows]int, lastMove Move, depth int, player int) in
 	}
 }
 
-func GetBotMove(board *[columns][rows]int, lastMove Move, depth int, player int) int {
+func GetBotMove(board *[columns][rows]int, depth int, player int) int {
 	moves := getMoves(board, player)
 	bestColumn := 0
 	var bestValue int
 	if player == 1 {
-		bestValue = -999999999999
+		bestValue = -9999999999999999
 		for _, move := range moves {
 			board[move.Column][move.Row] = player
 			value := minimax(board, move, depth, player*-1)
@@ -184,7 +167,7 @@ func GetBotMove(board *[columns][rows]int, lastMove Move, depth int, player int)
 			}
 		}
 	} else {
-		bestValue = 999999999999
+		bestValue = 9999999999999999
 		for _, move := range moves {
 			board[move.Column][move.Row] = player
 			value := minimax(board, move, depth, player*-1)
