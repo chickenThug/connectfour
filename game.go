@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Move struct {
 	Player int
@@ -46,7 +48,7 @@ func (g *Game) printBoard() {
 				char = " "
 			case 1:
 				char = "x"
-			case 2:
+			case -1:
 				char = "o"
 			}
 
@@ -58,8 +60,8 @@ func (g *Game) printBoard() {
 }
 
 func (g *Game) isWon(lastMove Move) bool {
-	horizontal := Direction{0, 1}
-	vertical := Direction{1, 0}
+	horizontal := Direction{1, 0}
+	vertical := Direction{0, 1}
 	diagonal := Direction{1, 1}
 	antiDiagonal := Direction{1, -1}
 
@@ -104,21 +106,26 @@ func (g *Game) isColumnFull(column int) bool {
 
 func (g *Game) run() {
 	var column int
+	var last_move Move
 
 	g.printBoard()
 
 	for !g.IsOver {
 		fmt.Printf("Player %d turn plese choose a column (0-6)\n", g.Player)
+		if g.Player == 1 {
+			column = GetBotMove(&g.Board, last_move, 4, g.Player)
+		} else {
+			_, err := fmt.Scan(&column)
 
-		_, err := fmt.Scan(&column)
-		if err != nil {
-			fmt.Println("Invalid input please enter a number")
-			continue
-		} else if column >= columns || column < 0 {
-			fmt.Println("Invalid input please enter a number 0-6")
-			continue
-		} else if g.isColumnFull(column) {
-			fmt.Println("The choosen column is full, please choose another")
+			if err != nil {
+				fmt.Println("Invalid input please enter a number")
+				continue
+			} else if column >= columns || column < 0 {
+				fmt.Println("Invalid input please enter a number 0-6")
+				continue
+			} else if g.isColumnFull(column) {
+				fmt.Println("The choosen column is full, please choose another")
+			}
 		}
 
 		last_move := g.updateBoard(column)
@@ -133,7 +140,7 @@ func (g *Game) run() {
 			g.IsOver = true
 		}
 		if g.Player == 1 {
-			g.Player = 2
+			g.Player = -1
 		} else {
 			g.Player = 1
 		}
