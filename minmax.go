@@ -73,9 +73,10 @@ func windowValue(board *[columns][rows]int, column, row int, dir Direction) int 
 			row += dir.Vertical
 		}
 		marker := board[column][row]
-		if marker == -1 {
+		switch marker {
+		case -1:
 			player2 += 1
-		} else if marker == 1 {
+		case 1:
 			player1 += 1
 		}
 	}
@@ -122,7 +123,7 @@ func minimax(board *[columns][rows]int, lastMove Move, depth int, player int) in
 	isOver := isTerminal(board, lastMove)
 	if isOver > 0 {
 		if isOver == 2 {
-			return 999999999999999 * player
+			return 999999999999999 * lastMove.Player
 		} else {
 			return 0
 		}

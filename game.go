@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 type Move struct {
@@ -106,14 +107,16 @@ func (g *Game) isColumnFull(column int) bool {
 
 func (g *Game) run() {
 	var column int
-	var last_move Move
+	var lastMove Move
 
 	g.printBoard()
 
 	for !g.IsOver {
 		fmt.Printf("Player %d turn plese choose a column (0-6)\n", g.Player)
 		if g.Player == 1 {
-			column = GetBotMove(&g.Board, 4, g.Player)
+			start := time.Now()
+			column = GetBotMove(&g.Board, 6, g.Player)
+			fmt.Println("Bot made move in:", time.Since(start))
 		} else {
 			_, err := fmt.Scan(&column)
 
@@ -128,11 +131,11 @@ func (g *Game) run() {
 			}
 		}
 
-		last_move = g.updateBoard(column)
+		lastMove = g.updateBoard(column)
 		g.Turns++
 		g.printBoard()
 
-		if g.isWon(last_move) {
+		if g.isWon(lastMove) {
 			fmt.Printf("Congrats Player %d you won\n", g.Player)
 			g.IsOver = true
 		} else if g.Turns == (rows * columns) {
